@@ -20,7 +20,12 @@
   "homepage": "https://github.com/catdad/gulp-reduce-async#readme",
   "devDependencies": {
     "chai": "^3.5.0",
+    "gulp": "^3.9.1",
     "istanbul": "^0.4.5",
     "mocha": "^3.0.2"
+  },
+  "dependencies": {
+    "read-vinyl-file-stream": "^1.1.0",
+    "vinyl": "^1.2.0"
   }
 }
