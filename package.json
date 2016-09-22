@@ -11,7 +11,6 @@
     "type": "git",
     "url": "git+https://github.com/catdad/gulp-reduce-async.git"
   },
-  "keywords": [],
   "author": "Kiril Vatev <vatev.1@gmail.com>",
   "license": "ISC",
   "bugs": {
@@ -29,5 +28,12 @@
   "dependencies": {
     "read-vinyl-file-stream": "^1.1.0",
     "vinyl": "^1.2.0"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "keywords": [
+    "gulpplugin",
+    "reduce"
+  ]
 }
