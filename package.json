@@ -22,7 +22,9 @@
     "chai": "^3.5.0",
     "gulp": "^3.9.1",
     "istanbul": "^0.4.5",
-    "mocha": "^3.0.2"
+    "mocha": "^3.0.2",
+    "node-stream": "0.0.6",
+    "through2": "^2.0.1"
   },
   "dependencies": {
     "read-vinyl-file-stream": "^1.1.0",
