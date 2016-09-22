@@ -1,7 +1,7 @@
 {
   "name": "gulp-reduce-async",
   "version": "0.0.0",
-  "description": "",
+  "description": "reduce all files in a gulp stream to a single file using the file contents directly",
   "main": "index.js",
   "scripts": {
     "test": "mocha",
