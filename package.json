@@ -19,6 +19,7 @@
   "homepage": "https://github.com/catdad/gulp-reduce-async#readme",
   "devDependencies": {
     "chai": "^3.5.0",
+    "codeclimate-test-reporter": "^0.3.3",
     "gulp": "^3.9.1",
     "istanbul": "^0.4.5",
     "mocha": "^3.0.2",
