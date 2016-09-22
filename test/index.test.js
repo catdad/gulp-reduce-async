@@ -103,7 +103,31 @@ describe('[index]', function () {
         });
     });
 
-    it.only('writes the final memo value to a vinyl file in the output', function (done) {
+    it('accepts buffers for the initial and new memo parameters', function (done) {
+        var prevMemo = Math.random().toString(36);
+
+        var out = reduce(function (memo, content, file, cb) {
+            expect(Buffer.isBuffer(memo)).to.equal(true);
+
+            expect(memo.toString()).to.equal(prevMemo);
+
+            prevMemo = Math.random().toString(36);
+
+            cb(null, new Buffer(prevMemo));
+        }, new Buffer(prevMemo));
+
+        bufferStream().pipe(out);
+
+        ns.wait.obj(out, function (err, data) {
+            expect(err).to.equal(null);
+
+            expect(data).to.be.an('array').and.to.have.lengthOf(1);
+
+            done();
+        });
+    });
+
+    it('writes the final memo value to a vinyl file in the output', function (done) {
         var CONTENT = Math.random().toString(36);
 
         var out = reduce(function (memo, content, file, cb) {
@@ -126,9 +150,21 @@ describe('[index]', function () {
         });
     });
 
-    it('accepts buffers for the initial and new memo parameters');
+    it('handles errors passed to the callback method', function (done) {
+        var ERR = new Error('pineapples');
 
-    it('handles errors passed to the callback method');
+        var out = reduce(function (memo, content, file, cb) {
+            cb(ERR);
+        }, '');
+
+        bufferStream().pipe(out);
+
+        ns.wait.obj(out, function (err, data) {
+            expect(err).to.equal(ERR);
+
+            done();
+        });
+    });
 
     it('can optionally provide buffer content to the iterator');
 
