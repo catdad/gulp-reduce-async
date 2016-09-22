@@ -31,7 +31,7 @@ module.exports = function reduceAsync(iterator, memo, enc) {
     return readFiles(function(content, file, stream, cb) {
         iterator(memo, content, file, function (err, newMemo) {
             if (!validMemo(memo)) {
-                cb(new TypeError(newMemo + ' must be a string'));
+                cb(new TypeError(newMemo + ' must be a string or buffer'));
 
                 return;
             }

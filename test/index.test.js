@@ -54,6 +54,26 @@ function bufferStream() {
     return stream;
 }
 
+function streamStream() {
+    var stream = through.obj();
+
+    setImmediate(function () {
+        stream.push(fileStream({
+            content: '1'
+        }));
+        stream.push(fileStream({
+            content: '2'
+        }));
+        stream.push(fileStream({
+            content: '3'
+        }));
+
+        stream.end();
+    });
+
+    return stream;
+}
+
 describe('[index]', function () {
     it('calls the iterator for each file', function (done) {
         var count = 0;
@@ -67,6 +87,32 @@ describe('[index]', function () {
         }, '');
 
         bufferStream().pipe(out);
+
+        ns.wait.obj(out, function (err, data) {
+            expect(err).to.equal(null);
+
+            expect(data).to.be.an('array').and.to.have.lengthOf(1);
+
+            var file = data[0];
+
+            expect(file).to.have.property('contents').and.to.be.instanceOf(Buffer);
+
+            done();
+        });
+    });
+
+    it('works with a stream an vinyl stream files', function (done) {
+        var count = 0;
+
+        var out = reduce(function (memo, content, file, cb) {
+            count += 1;
+
+            expect(content).to.equal(count.toString());
+
+            cb(null, memo);
+        }, '');
+
+        streamStream().pipe(out);
 
         ns.wait.obj(out, function (err, data) {
             expect(err).to.equal(null);
@@ -166,11 +212,73 @@ describe('[index]', function () {
         });
     });
 
-    it('can optionally provide buffer content to the iterator');
+    it('can optionally provide buffer content to the iterator', function (done) {
+        var count = 0;
 
-    it('throws if iterator is not a function');
+        var out = reduce(function (memo, content, file, cb) {
+            count += 1;
 
-    it('throws if memo is not a string or buffer');
+            expect(Buffer.isBuffer(content)).to.equal(true);
+            expect(content.toString()).to.equal(count.toString());
 
-    it('errors the stream if a memo that is not a string or buffer is passed to the iterator callback');
+            cb(null, memo);
+        }, '', 'buffer');
+
+        bufferStream().pipe(out);
+
+        ns.wait.obj(out, function (err, data) {
+            expect(err).to.equal(null);
+
+            expect(data).to.be.an('array').and.to.have.lengthOf(1);
+
+            done();
+        });
+    });
+
+    it('can accept a buffer as the memo from the iterator', function (done) {
+        var CONTENT = new Buffer('pineapples');
+
+        var out = reduce(function (memo, content, file, cb) {
+            expect(memo).to.equal(CONTENT);
+
+            cb(null, CONTENT);
+        }, CONTENT);
+
+        bufferStream().pipe(out);
+
+        ns.wait.obj(out, function (err, data) {
+            expect(err).to.equal(null);
+
+            expect(data).to.be.an('array').and.to.have.lengthOf(1);
+
+            done();
+        });
+    });
+
+    it('throws if iterator is not a function', function () {
+        expect(function () {
+            reduce('not a function');
+        }).to.throw(TypeError, 'iterator must be a function');
+    });
+
+    it('throws if memo is not a string or buffer', function () {
+        expect(function () {
+            reduce(function () {}, 42);
+        }).to.throw(TypeError, 'memo must be a string or buffer');
+    });
+
+    it('errors the stream if a memo that is not a string or buffer is passed to the iterator callback', function (done) {
+        var out = reduce(function (memo, content, file, cb) {
+            cb(null, 42);
+        }, '', 'buffer');
+
+        bufferStream().pipe(out);
+
+        ns.wait.obj(out, function (err, data) {
+            expect(err).to.be.instanceOf(TypeError);
+            expect(err).to.have.property('message').and.to.equal('42 must be a string or buffer');
+
+            done();
+        });
+    });
 });
