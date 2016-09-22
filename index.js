@@ -44,7 +44,7 @@ module.exports = function reduceAsync(iterator, memo, enc) {
 
         stream.push(new File({
             contents: buffer(memo),
-            path: 'reduces',
+            path: path.resolve(base, 'reduced'),
             base: base
         }));
 
