@@ -52,11 +52,14 @@ This is the declaration of the iterator function. It takes the following paramet
 - **file** _{Object}_ - the actual vinyl file object for the current file.
 - **callback** _{Function}_ - the method to call when done processing the file. This method takes an error as its first parameter (or `null` if no error occured), and the new memo value as the second parameter.
 
+Note that the resulting file will be named `reduced` with no extension. If you want to use a more meaningful name, you can use a module like [gulp-rename](https://github.com/hparra/gulp-rename) to accomplish that.
+
 ## Examples
 
 ```javascript
 var gulp = require('gulp');
 var reduce = require('gulp-reduce-async');
+var rename = require('gulp-rename');
 
 gulp.task('files-to-json', function () {
     return gulp.src('myfiles/*')
@@ -66,6 +69,8 @@ gulp.task('files-to-json', function () {
             json[file.path] = content;
 
             cb(null, JSON.stringify(json));
-        }, '{}');
+        }, '{}')
+        .pipe(rename('allfiles.json'))
+        .pipe(dest('dist'));
 });
 ```
