@@ -34,37 +34,19 @@ function fileStream(opts) {
     });
 }
 
-function bufferStream() {
+function getStream(file) {
+    file = file || fileBuffer;
+
     var stream = through.obj();
 
     setImmediate(function () {
-        stream.push(fileBuffer({
+        stream.push(file({
             content: '1'
         }));
-        stream.push(fileBuffer({
+        stream.push(file({
             content: '2'
         }));
-        stream.push(fileBuffer({
-            content: '3'
-        }));
-
-        stream.end();
-    });
-
-    return stream;
-}
-
-function streamStream() {
-    var stream = through.obj();
-
-    setImmediate(function () {
-        stream.push(fileStream({
-            content: '1'
-        }));
-        stream.push(fileStream({
-            content: '2'
-        }));
-        stream.push(fileStream({
+        stream.push(file({
             content: '3'
         }));
 
@@ -75,6 +57,7 @@ function streamStream() {
 }
 
 describe('[index]', function () {
+
     it('calls the iterator for each file', function (done) {
         var count = 0;
 
@@ -86,7 +69,7 @@ describe('[index]', function () {
             cb(null, memo);
         }, '');
 
-        bufferStream().pipe(out);
+        getStream().pipe(out);
 
         ns.wait.obj(out, function (err, data) {
             expect(err).to.equal(null);
@@ -112,7 +95,7 @@ describe('[index]', function () {
             cb(null, memo);
         }, '');
 
-        streamStream().pipe(out);
+        getStream(fileStream).pipe(out);
 
         ns.wait.obj(out, function (err, data) {
             expect(err).to.equal(null);
@@ -138,7 +121,7 @@ describe('[index]', function () {
             cb(null, prevMemo);
         }, prevMemo);
 
-        bufferStream().pipe(out);
+        getStream().pipe(out);
 
         ns.wait.obj(out, function (err, data) {
             expect(err).to.equal(null);
@@ -162,7 +145,7 @@ describe('[index]', function () {
             cb(null, new Buffer(prevMemo));
         }, new Buffer(prevMemo));
 
-        bufferStream().pipe(out);
+        getStream().pipe(out);
 
         ns.wait.obj(out, function (err, data) {
             expect(err).to.equal(null);
@@ -180,7 +163,7 @@ describe('[index]', function () {
             cb(null, CONTENT);
         }, '');
 
-        bufferStream().pipe(out);
+        getStream().pipe(out);
 
         ns.wait.obj(out, function (err, data) {
             expect(err).to.equal(null);
@@ -203,7 +186,7 @@ describe('[index]', function () {
             cb(ERR);
         }, '');
 
-        bufferStream().pipe(out);
+        getStream().pipe(out);
 
         ns.wait.obj(out, function (err, data) {
             expect(err).to.equal(ERR);
@@ -224,7 +207,7 @@ describe('[index]', function () {
             cb(null, memo);
         }, '', 'buffer');
 
-        bufferStream().pipe(out);
+        getStream().pipe(out);
 
         ns.wait.obj(out, function (err, data) {
             expect(err).to.equal(null);
@@ -244,7 +227,7 @@ describe('[index]', function () {
             cb(null, CONTENT);
         }, CONTENT);
 
-        bufferStream().pipe(out);
+        getStream().pipe(out);
 
         ns.wait.obj(out, function (err, data) {
             expect(err).to.equal(null);
@@ -272,7 +255,7 @@ describe('[index]', function () {
             cb(null, 42);
         }, '', 'buffer');
 
-        bufferStream().pipe(out);
+        getStream().pipe(out);
 
         ns.wait.obj(out, function (err, data) {
             expect(err).to.be.instanceOf(TypeError);
@@ -281,4 +264,5 @@ describe('[index]', function () {
             done();
         });
     });
+
 });
